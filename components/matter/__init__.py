@@ -265,12 +265,8 @@ async def to_code(config: ConfigType):
     # Ethernet driver (EMAC + PHY init). ESPHome's ethernet component owns the netif, so keep this disabled.
     add_idf_sdkconfig_option("CONFIG_ENABLE_ETHERNET_TELEMETRY", False)
 
-    # Ethernet is owned by ESPHome, so esp-matter must not expect a connectedhomeip network driver.
+    # Ethernet is owned by ESPHome, so esp-matter must not install its own Ethernet driver or touch the hardware.
     add_idf_sdkconfig_option("CONFIG_ESP_MATTER_APPLICATION_OWNS_NETWORK_INTERFACE", use_ethernet)
-    # Without a Thread or Wi-Fi driver the Network Commissioning cluster has nothing to serve, so don't add it to the
-    # root endpoint (allowed by the Matter spec for devices with out-of-band network configuration).
-    if use_ethernet and not (use_wifi or use_openthread):
-        add_idf_sdkconfig_option("CONFIG_CUSTOM_NETWORK_CONFIG", True)
 
     # CONFIG_ENABLE_CHIPOBLE is enabled by default and must explicitly be disabled when not needed.
     add_idf_sdkconfig_option("CONFIG_ENABLE_CHIPOBLE", not has_connectivity)
